@@ -1,3 +1,5 @@
+requests
+toml
 sphinx
 tox
 wheel
