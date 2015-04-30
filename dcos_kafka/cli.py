@@ -1,4 +1,5 @@
 """DCOS Kafka Subcommand"""
+from __future__ import print_function
 import os
 import pkg_resources
 import requests
@@ -80,8 +81,8 @@ def run(args):
         stderr=subprocess.PIPE)
 
     stdout, stderr = process.communicate()
-    sys.stdout.write(stdout.decode("utf-8"))
-    sys.stderr.write(stderr.decode("utf-8"))
+    print(stdout.decode("utf-8"), end="")
+    print(stderr.decode("utf-8"), end="", file=sys.stderr)
 
     return process.returncode
 
@@ -98,5 +99,5 @@ def main():
     try:
         return run(args)
     except CliError as e:
-        sys.stderr.write("Error: " + str(e) + "\n")
+        print("Error: " + str(e), file=sys.stderr)
         return 1
