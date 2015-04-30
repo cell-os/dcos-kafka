@@ -20,12 +20,10 @@ def marathon_app():
     response = requests.get(url, timeout=5)
     if response.status_code != 200:
         if response.status_code == 404: raise CliError("Kafka is not running")
-        else: sys.stderr.write("Unexpected status code: " + str(response.status_code))
-        sys.exit(1)
+        else: raise CliError("Unexpected status code: " + str(response.status_code))
 
     if 'app' not in response.json():
-        sys.stderr.write(response.json()['message'])
-        sys.exit(1)
+        raise CliError(response.json()['message'])
 
     return response.json()["app"]
 
@@ -82,15 +80,10 @@ def run(args):
         stderr=subprocess.PIPE)
 
     stdout, stderr = process.communicate()
+    sys.stdout.write(stdout.decode("utf-8"))
+    sys.stderr.write(stderr.decode("utf-8"))
 
-    if process.returncode != 0:
-        sys.stdout.write(stdout)
-        sys.stderr.write(stderr)
-        return process.returncode
-    else:
-        sys.stdout.write(stdout)
-        sys.stderr.write(stderr)
-        return 0
+    return process.returncode
 
 
 class CliError(Exception): pass
@@ -98,12 +91,12 @@ class CliError(Exception): pass
 
 def main():
     args = sys.argv[2:] # remove dcos-kafka & kafka
-    if (len(args) == 1 and args[0] == "--info"):
-        print "Manage Kafka brokers"
+    if len(args) == 1 and args[0] == "--info":
+        print("Manage Kafka brokers")
         return 0
 
     try:
         return run(args)
     except CliError as e:
-        sys.stderr.write("Error: " + e.message + "\n")
+        sys.stderr.write("Error: " + str(e) + "\n")
         return 1
