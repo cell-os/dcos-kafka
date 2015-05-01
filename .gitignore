@@ -1,5 +1,8 @@
 .tox
 build
 dist
+env
+**/*.pyc
+dcos_kafka.egg-info/
 
 dcos-kafka.iml

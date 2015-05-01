@@ -1,4 +1,4 @@
-"""DCOS Kafka Subcommand"""
+"""DCOS Kafka"""
 from __future__ import print_function
 import os
 import pkg_resources
@@ -6,6 +6,7 @@ import requests
 import sys
 import subprocess
 import toml
+from dcos_kafka import constants
 
 def marathon_app():
     dcos_config = os.getenv("DCOS_CONFIG")
@@ -66,10 +67,11 @@ def find_jar():
 
 
 def run(args):
+    help = len(args) > 0 and args[0] == "--help"
+    if help: args[0] = "help"
+
     command = [find_java(), "-jar", find_jar()]
     command.extend(args)
-
-    help = len(args) > 0 and args[0] == "help"
 
     env = {"KM_NO_SCHEDULER" : "true"}
     if not help: env["KM_API"] = api_url()
@@ -94,6 +96,14 @@ def main():
     args = sys.argv[2:] # remove dcos-kafka & kafka
     if len(args) == 1 and args[0] == "--info":
         print("Manage Kafka brokers")
+        return 0
+
+    if len(args) == 1 and args[0] == "--version":
+        print(constants.version)
+        return 0
+
+    if len(args) == 1 and args[0] == "--config-schema":
+        print("{}")
         return 0
 
     try:
