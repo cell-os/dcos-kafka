@@ -1,3 +1,5 @@
 .tox
 build
 dist
+
+dcos-kafka.iml
