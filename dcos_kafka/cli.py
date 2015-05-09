@@ -95,7 +95,7 @@ class CliError(Exception): pass
 def main():
     args = sys.argv[2:] # remove dcos-kafka & kafka
     if len(args) == 1 and args[0] == "--info":
-        print("Manage Kafka brokers")
+        print("Start and manage Kafka brokers")
         return 0
 
     if len(args) == 1 and args[0] == "--version":
@@ -105,6 +105,11 @@ def main():
     if len(args) == 1 and args[0] == "--config-schema":
         print("{}")
         return 0
+
+    if "--help" in args or "-h" in args:
+        if "--help" in args: args.remove("--help")
+        if "-h" in args: args.remove("-h")
+        args.insert(0, "help")
 
     try:
         return run(args)
