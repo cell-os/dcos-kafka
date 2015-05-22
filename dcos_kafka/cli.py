@@ -6,33 +6,13 @@ import requests
 import sys
 import subprocess
 import toml
+from dcos import marathon
 from dcos_kafka import constants
-
-def marathon_app():
-    dcos_config = os.getenv("DCOS_CONFIG")
-    if dcos_config is None:
-        raise CliError("Please specify DCOS_CONFIG env variable")
-
-    with open(dcos_config) as f:
-        config = toml.loads(f.read())
-
-    marathon = config["marathon"]
-    url = ("http://" + marathon["host"] + ":" + str(marathon["port"]) + "/v2/apps/kafka")
-
-    response = requests.get(url, timeout=5)
-    if response.status_code != 200:
-        if response.status_code == 404: raise CliError("Kafka is not running")
-        else: raise CliError("Unexpected status code: " + str(response.status_code))
-
-    if 'app' not in response.json():
-        raise CliError(response.json()['message'])
-
-    return response.json()["app"]
 
 
 def api_url():
-    app = marathon_app()
-    tasks = app['tasks']
+    client = marathon.create_client()
+    tasks = client.get_tasks("kafka")
 
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
@@ -67,7 +47,7 @@ def find_jar():
 
 
 def run(args):
-    help = len(args) > 0 and args[0] == "--help"
+    help = len(args) > 0 and args[0] == "help"
     if help: args[0] = "help"
 
     command = [find_java(), "-jar", find_jar()]
@@ -93,6 +73,7 @@ class CliError(Exception): pass
 
 
 def main():
+    print(sys.argv)
     args = sys.argv[2:] # remove dcos-kafka & kafka
     if len(args) == 1 and args[0] == "--info":
         print("Start and manage Kafka brokers")
