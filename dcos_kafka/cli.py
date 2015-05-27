@@ -2,11 +2,10 @@
 from __future__ import print_function
 import os
 import pkg_resources
-import requests
 import sys
 import subprocess
-import toml
-from dcos import marathon
+import urlparse
+from dcos import marathon, util
 from dcos_kafka import constants
 
 
@@ -17,8 +16,8 @@ def api_url():
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
 
-    task = tasks[0]
-    return "http://" + task["host"] + ":" + str(task["ports"][0])
+    base_url = util.get_config().get('core.dcos_url')
+    return urlparse.urljoin(base_url, '/service/kafka/')
 
 
 def find_java():
@@ -73,7 +72,6 @@ class CliError(Exception): pass
 
 
 def main():
-    print(sys.argv)
     args = sys.argv[2:] # remove dcos-kafka & kafka
     if len(args) == 1 and args[0] == "--info":
         print("Start and manage Kafka brokers")

@@ -71,7 +71,8 @@ setup(
         'dcos>=0.1.6, <1.0',
         'docopt',
         'toml',
-        'requests'
+        'requests',
+        'six>=1.9, <2.0'
     ],
 
     # List additional groups of dependencies here (e.g. development
