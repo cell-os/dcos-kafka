@@ -33,9 +33,12 @@ def find_java():
         for path in os.environ['PATH'].split(os.pathsep):
             path = path.strip('"')
             java_file = os.path.join(path, 'java')
-            if executable(java_file): return java_file
 
-    raise CliError("This command requires Java to be installed. Please install JRE")
+            if executable(java_file):
+                return java_file
+
+    raise CliError("This command requires Java to be installed. "
+                   "Please install JRE")
 
 
 def find_jar():
@@ -47,14 +50,16 @@ def find_jar():
 
 
 def run(args):
-    help = len(args) > 0 and args[0] == "help"
-    if help: args[0] = "help"
+    help_arg = len(args) > 0 and args[0] == "help"
+    if help_arg:
+        args[0] = "help"
 
     command = [find_java(), "-jar", find_jar()]
     command.extend(args)
 
-    env = {"KM_NO_SCHEDULER" : "true"}
-    if not help: env["KM_API"] = api_url()
+    env = {"KM_NO_SCHEDULER": "true"}
+    if not help_arg:
+        env["KM_API"] = api_url()
 
     process = subprocess.Popen(
         command,
@@ -69,11 +74,12 @@ def run(args):
     return process.returncode
 
 
-class CliError(Exception): pass
+class CliError(Exception):
+    pass
 
 
 def main():
-    args = sys.argv[2:] # remove dcos-kafka & kafka
+    args = sys.argv[2:]  # remove dcos-kafka & kafka
     if len(args) == 1 and args[0] == "--info":
         print("Start and manage Kafka brokers")
         return 0
@@ -87,8 +93,12 @@ def main():
         return 0
 
     if "--help" in args or "-h" in args:
-        if "--help" in args: args.remove("--help")
-        if "-h" in args: args.remove("-h")
+        if "--help" in args:
+            args.remove("--help")
+
+        if "-h" in args:
+            args.remove("-h")
+
         args.insert(0, "help")
 
     try:
