@@ -8,4 +8,3 @@ def test_help():
     assert returncode == 0
     assert stdout.startswith("Usage:")
     assert stderr == b''
-

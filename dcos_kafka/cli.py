@@ -1,9 +1,11 @@
 """DCOS Kafka"""
 from __future__ import print_function
+
 import os
-import pkg_resources
-import sys
 import subprocess
+import sys
+
+import pkg_resources
 from dcos import marathon, util
 from dcos_kafka import constants
 
