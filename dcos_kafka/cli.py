@@ -4,7 +4,6 @@ import os
 import pkg_resources
 import sys
 import subprocess
-import urlparse
 from dcos import marathon, util
 from dcos_kafka import constants
 
@@ -16,8 +15,8 @@ def api_url():
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
 
-    base_url = util.get_config().get('core.dcos_url')
-    return urlparse.urljoin(base_url, '/service/kafka/')
+    base_url = util.get_config().get('core.dcos_url').rstrip("/")
+    return base_url + '/service/kafka/'
 
 
 def find_java():
