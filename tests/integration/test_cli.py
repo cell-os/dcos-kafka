@@ -6,5 +6,5 @@ def test_help():
         ['dcos-kafka', 'kafka', 'help'])
 
     assert returncode == 0
-    assert stdout.startswith("Usage:")
+    assert stdout.startswith(b"Usage:")
     assert stderr == b''
