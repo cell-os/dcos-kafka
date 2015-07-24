@@ -31,8 +31,13 @@ def api_url():
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
 
-    base_url = util.get_config().get('core.dcos_url').rstrip("/")
-    return base_url + '/service/kafka/'
+    base_url = util.get_config().get('kafka.url')
+    if base_url != None:
+        base_url = base_url.rstrip("/")
+    else:
+        base_url = util.get_config().get('core.dcos_url').rstrip("/")
+        base_url += '/service/kafka'
+    return base_url
 
 
 def find_java():
