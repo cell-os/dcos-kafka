@@ -92,6 +92,14 @@ def run(args):
 
     return process.returncode
 
+def _cli_config_schema():
+    """
+    :returns: schema for kafka cli config
+    :rtype: dict
+    """
+    return pkg_resources.resource_string(
+            'dcos_kafka',
+            'data/config-schema/kafka.json').decode('utf-8')
 
 class CliError(Exception):
     pass
@@ -108,7 +116,7 @@ def main():
         return 0
 
     if len(args) == 1 and args[0] == "--config-schema":
-        print("{}")
+        print(_cli_config_schema())
         return 0
 
     if "--help" in args or "-h" in args:
