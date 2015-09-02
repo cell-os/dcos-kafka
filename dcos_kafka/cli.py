@@ -31,8 +31,13 @@ def api_url():
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
 
-    base_url = util.get_config().get('core.dcos_url').rstrip("/")
-    return base_url + '/service/kafka/'
+    base_url = util.get_config().get('kafka.url')
+    if base_url != None:
+        base_url = base_url.rstrip("/")
+    else:
+        base_url = util.get_config().get('core.dcos_url').rstrip("/")
+        base_url += '/service/kafka'
+    return base_url
 
 
 def find_java():
@@ -87,6 +92,14 @@ def run(args):
 
     return process.returncode
 
+def _cli_config_schema():
+    """
+    :returns: schema for kafka cli config
+    :rtype: dict
+    """
+    return pkg_resources.resource_string(
+            'dcos_kafka',
+            'data/config-schema/kafka.json').decode('utf-8')
 
 class CliError(Exception):
     pass
@@ -103,7 +116,7 @@ def main():
         return 0
 
     if len(args) == 1 and args[0] == "--config-schema":
-        print("{}")
+        print(_cli_config_schema())
         return 0
 
     if "--help" in args or "-h" in args:
