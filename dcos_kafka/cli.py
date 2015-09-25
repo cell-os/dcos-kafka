@@ -44,14 +44,18 @@ def find_java():
     def executable(file_path):
         return os.path.isfile(file_path) and os.access(file_path, os.X_OK)
 
+    java_binary = 'java'
+    if util.is_windows_platform():
+        java_binary = java_binary + '.exe'
+
     java_home = os.environ.get('JAVA_HOME')
-    if java_home is not None and executable(java_home + "/bin/java"):
-        return java_home + "/bin/java"
+    if java_home is not None and executable(java_home + "/bin/" + java_binary):
+        return java_home + "/bin/" + java_binary
 
     if 'PATH' in os.environ:
         for path in os.environ['PATH'].split(os.pathsep):
             path = path.strip('"')
-            java_file = os.path.join(path, 'java')
+            java_file = os.path.join(path, java_binary)
 
             if executable(java_file):
                 return java_file
