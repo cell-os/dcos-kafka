@@ -76,7 +76,9 @@ def run(args):
     command = [find_java(), "-jar", find_jar()]
     command.extend(args)
 
-    env = {"KM_NO_SCHEDULER": "true"}
+    env = os.environ.copy()
+    env["KM_NO_SCHEDULER"] = "true"
+
     if not help_arg:
         env["KM_API"] = api_url()
 
