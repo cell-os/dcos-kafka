@@ -86,6 +86,12 @@ def run(args):
     if not help_arg:
         env["KM_API"] = api_url()
 
+    # Workaround for FRAMEWORK-544
+    # the java program does not like it if tputs doesn't work,
+    # and tputs requires that $TERM is set
+    if not 'TERM' in env:
+        env['TERM'] = 'dumb'
+
     process = subprocess.Popen(
         command,
         env=env,
