@@ -24,9 +24,9 @@ from dcos import marathon, util
 from dcos_kafka import constants
 
 
-def api_url():
+def api_url(app_id="kafka"):
     client = marathon.create_client()
-    tasks = client.get_tasks("kafka")
+    tasks = client.get_tasks(app_id)
 
     if len(tasks) == 0:
         raise CliError("Kafka is not running")
@@ -34,11 +34,17 @@ def api_url():
     base_url = util.get_config().get('kafka.url')
     if base_url != None:
         base_url = base_url.rstrip("/")
-    else:
+
+    dcos_url = util.get_config().get('core.dcos_url')
+    if dcos_url != None:
         base_url = util.get_config().get('core.dcos_url').rstrip("/")
         base_url += '/service/kafka'
-    return base_url
 
+    cell_url = util.get_config().get('core.cell_url')
+    if cell_url != None:
+        base_url = cell_url.format(service=app_id.replace("/", "_"))
+
+    return base_url
 
 def find_java():
     def executable(file_path):
@@ -72,7 +78,7 @@ def find_jar():
     raise CliError("kafka-mesos*.jar not found in package resources")
 
 
-def run(args):
+def run(app_id, args):
     help_arg = len(args) > 0 and args[0] == "help"
     if help_arg:
         args[0] = "help"
@@ -84,7 +90,7 @@ def run(args):
     env["KM_NO_SCHEDULER"] = "true"
 
     if not help_arg:
-        env["KM_API"] = api_url()
+        env["KM_API"] = api_url(app_id)
 
     # Workaround for FRAMEWORK-544
     # the java program does not like it if tputs doesn't work,
@@ -140,8 +146,14 @@ def main():
 
         args.insert(0, "help")
 
+    app_id = "kafka"
+    if "--app-id" in args:
+        idx = args.index("--app-id")
+        app_id = args[idx + 1]
+        del args[idx:idx+2]
+
     try:
-        return run(args)
+        return run(app_id, args)
     except CliError as e:
         print("Error: " + str(e), file=sys.stderr)
         return 1
