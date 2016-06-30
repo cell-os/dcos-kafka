@@ -82,11 +82,12 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'dcos>=0.1.6, <1.0',
-        'docopt',
-        'toml',
-        'requests',
-        'six>=1.9, <2.0'
+        'dcos==0.4.4',
+        'docopt==0.6.2',
+        'six==1.10.0',
+        'toml==0.9.1',
+        'requests==2.9.1',
+        'six==1.10.0'
     ],
 
     # List additional groups of dependencies here (e.g. development
